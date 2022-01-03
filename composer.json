@@ -1,0 +1,21 @@
+{
+    "name": "alexander/php_vue",
+    "authors": [
+        {
+            "name": "alexander",
+            "email": "tchebaeff.alexander@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "league/route": "^5.1",
+        "laminas/laminas-diactoros": "^2.8",
+        "laminas/laminas-httphandlerrunner": "^2.1",
+        "robmorgan/phinx": "^0.12.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "src"
+        }
+    }
+}
