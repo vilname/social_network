@@ -11,10 +11,15 @@ use League\Route\Http\Exception\NotFoundException;
 
 class UsersService
 {
-    public function getUserByLogin(UserModel $user): ?UserModel
+    public function getUserByLogin(string $login): ?UserModel
     {
+//        echo '<pre>';
+//        print_r($_SESSION);
+//        echo '</pre>';
+//        die();
+
         try {
-            $user = (new UsersRepository())->getUserByLogin($user->getLogin());
+            $user = (new UsersRepository())->getUserByLogin($login);
         } catch (\Exception $e) {
             $user = null;
         }

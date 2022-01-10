@@ -55,18 +55,12 @@ class UsersRepository extends Main
     {
         $userBase = $this->getUserByLogin($user->getLogin());
 
-        echo '<pre>';
-        print_r(UserModel::setMapArray($userBase));
-        echo '</pre>';
-        die();
-
         if (
             $userBase->getLogin() === $user->getLogin()
             && $userBase->getPassword() === md5($user->getPassword())
         ) {
-//            $_SESSION['auth_user'] = UserModel::setMapArray($userBase);
-
-
+            $_COOKIE['PHPSESSID'] = session_id();
+            $_SESSION['auth_user'] = UserModel::setMapArray($userBase);
 
             return [
                 'success' => 'авторизация успешна'

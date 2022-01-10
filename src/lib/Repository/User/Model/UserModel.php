@@ -6,7 +6,7 @@ namespace app\lib\Repository\User\Model;
 
 class UserModel
 {
-    private int $id;
+    private ?int $id;
 
     private string $created;
 
@@ -29,7 +29,7 @@ class UserModel
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -37,7 +37,7 @@ class UserModel
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -190,6 +190,7 @@ class UserModel
     {
         $o = new self();
 
+        $o->setId($data['id']);
         $o->setLogin($data['login']);
         $o->setPassword($data['password']);
         $o->setFirstName($data['first_name']);
@@ -201,19 +202,8 @@ class UserModel
         return $o;
     }
 
-    public static function setMapArray(self $data): array
+    public static function setMapArray(UserModel $data): array
     {
-        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/update.txt', print_r([
-            'id' => $data->getId(),
-            'login' => $data->getLogin(),
-            'password' => $data->getPassword(),
-            'first_name' => $data->getFirstName(),
-            'sur_name' => $data->getSurName(),
-            'age' => $data->getAge(),
-            'city' => $data->getCity(),
-            'interest' => $data->getInterest(),
-        ], true), FILE_APPEND);
-
         return [
             'id' => $data->getId(),
             'login' => $data->getLogin(),

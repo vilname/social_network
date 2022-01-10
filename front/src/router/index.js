@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+import Home from "../components/Home.vue";
 import Login from "../components/Login.vue";
 import Registration from "../components/Registration.vue";
 
@@ -37,6 +37,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     console.log('to.path', to.path)
+    console.log('auth', localStorage.getItem('auth'))
 
     if (!localStorage.getItem('auth') && ['/login', '/registration'].indexOf(to.path) === -1 ) {
         next({name: 'Login'})

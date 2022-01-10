@@ -66,6 +66,7 @@ export default {
 
                     if (data.success) {
                         this.success = data.success
+                        localStorage.setItem('auth', 'true');
                     }
                 })
                 .catch((error) => {
