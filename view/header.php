@@ -16,7 +16,11 @@ if (
     && strpos($_SERVER['REQUEST_URI'], 'login.php') === false
     && strpos($_SERVER['REQUEST_URI'], 'registration.php') === false
 ) {
-    header("Location: /view/login.php");
+?>
+    <script>
+        window.location.replace('/view/login.php')
+    </script>
+<?php
 }
 
 ?>

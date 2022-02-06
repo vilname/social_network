@@ -9,7 +9,12 @@ if (!empty($_POST)) {
 }
 
 if ($_SESSION['auth_user']) {
-    header("Location: /");
+?>
+    <script>
+        window.location.replace('/')
+    </script>
+
+<?php
 }
 
 ?>

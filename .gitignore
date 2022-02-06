@@ -4,4 +4,7 @@ composer.lock
 .idea
 .env
 
+phinx.php
 update.txt
+
+app/lib/Repository/Main.php
