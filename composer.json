@@ -1,0 +1,19 @@
+{
+    "name": "alexander/php_vue",
+    "authors": [
+        {
+            "name": "alexander",
+            "email": "tchebaeff.alexander@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "robmorgan/phinx": "^0.12.9",
+      "ext-pdo": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "app"
+        }
+    }
+}
