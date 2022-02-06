@@ -10,7 +10,7 @@ class UsersModel
 {
     private ?int $id;
 
-    private string $created;
+    private ?string $created;
 
     private ?string $updated;
 
@@ -39,7 +39,7 @@ class UsersModel
     }
 
     /**
-     * @param int $id
+     * @param int|null $id
      */
     public function setId(?int $id): void
     {

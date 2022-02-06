@@ -9,7 +9,7 @@
     "require": {
         "php": ">=7.4",
         "robmorgan/phinx": "^0.12.9",
-      "ext-pdo": "*"
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {
