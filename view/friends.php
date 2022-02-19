@@ -12,7 +12,7 @@ if ($getParams['change_friend']) {
 }
 
 $usersController = new UsersController();
-$users = $usersController->getFriends($_SESSION['auth_user']['id']);
+$users = $usersController->getFriends();
 
 /** @var UsersModel $user */
 ?>

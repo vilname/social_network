@@ -37,7 +37,8 @@ class UsersController
         return null;
     }
 
-    public function logout($params) {
+    public function logout($params)
+    {
         if ($params['logout'] == 'yes') {
             unset($_SESSION['auth_user']);
         }
@@ -74,15 +75,20 @@ class UsersController
         return $userService->getUserByLogin($login);
     }
 
-    public function getOtherUsers(int $userId)
+    public function getOtherUsers(?array $searchUsers)
     {
         $userService = new UsersService();
-        return $userService->getOtherUsers($userId);
+        return $userService->getOtherUsers($searchUsers);
     }
 
-    public function getFriends(int $userId)
+    public function getFriends()
     {
         $userService = new UsersService();
-        return $userService->getFriends($userId);
+        return $userService->getFriends();
+    }
+
+    public function searchFriends(string $name, string $surName): array
+    {
+        return (new UsersService())->searchFriends($name, $surName);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace app\lib\Services\User;
 
+use app\lib\Repository\Friends\Model\FriendsModel;
+use app\lib\Repository\Main;
 use app\lib\Repository\User\Model\UsersModel;
 use app\lib\Repository\User\UsersRepository;
 
@@ -33,13 +35,33 @@ class UsersService
         return (new UsersRepository())->authUser($user);
     }
 
-    public function getOtherUsers(int $userId): array
+    /**
+     * @param UsersModel[]|null $searchUsers
+     * @return UsersModel[]
+     */
+    public function getOtherUsers(? array $searchUsers): array
     {
-        return (new UsersRepository())->getOtherUsers($userId);
+        if ($searchUsers) {
+            $authUserFriends = (new UsersRepository())->getFriends(array_keys($searchUsers));
+            foreach ($authUserFriends as $userId => $fields) {
+                if ($searchUsers[$userId]) {
+                    $searchUsers[$userId] = $fields;
+                }
+            }
+
+            return (new UsersRepository())->getFriends(array_keys($searchUsers));
+        }
+
+        return (new UsersRepository())->getOtherUsers();
     }
 
-    public function getFriends(int $userId): array
+    public function getFriends(): array
     {
-        return (new UsersRepository())->getFriends($userId);
+        return (new UsersRepository())->getFriends();
+    }
+
+    public function searchFriends(string $name, string $surName): array
+    {
+        return (new UsersRepository())->searchFriends($name, $surName);
     }
 }

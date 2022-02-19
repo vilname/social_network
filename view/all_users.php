@@ -11,10 +11,31 @@ if ($getParams['change_friend']) {
 }
 
 $usersController = new UsersController();
-$users = $usersController->getOtherUsers($_SESSION['auth_user']['id']);
+$searchUsers = null;
+$name = $_POST['search-name'] ?? '';
+$surName = $_POST['search-surname'] ?? '';
+if (!$_POST['search-name'] || !$_POST['search-surname']) {
+    $searchUsers = $usersController->searchFriends($name, $surName);
+}
+
+$usersController = new UsersController();
+$users = $usersController->getOtherUsers($searchUsers);
 
 /** @var UsersModel $user */
 ?>
+
+<form class="form-group mt-2 mb-2" name="search" method="post">
+    <div class="form-group">
+        <label for="search-name">Имя</label>
+        <input type="text" class="form-control search--input" name="search-name" id="search-name" placeholder="Имя" value="<?= $name ?>">
+    </div>
+    <div class="form-group">
+        <label for="search-surname">Фамилия</label>
+        <input type="text" class="form-control" id="search-surname" placeholder="Фамилия" value="<?= $surName ?>">
+    </div>
+
+    <button type="submit" class="btn btn-primary mb-2">Поиск</button>
+</form>
 
 <div class="list-group w-100" id="list-tab" role="tablist">
     <?php foreach ($users as $user) { ?>

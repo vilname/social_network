@@ -37,7 +37,7 @@ final class AddItemUserTable extends AbstractMigration
                 'first_name' => 'Иван',
                 'sur_name' => 'Иванов',
                 'age' => 18,
-                'city' => 'Орель',
+                'city' => 'Орел',
                 'interest' => 'футбол'
             ],
             [
