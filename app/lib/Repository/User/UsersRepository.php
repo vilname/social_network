@@ -104,25 +104,15 @@ class UsersRepository extends Main
         }
     }
 
-    /**
-     * поиск всех пользователей кроме авторизованного
-     * пользователи отдаются со статусом, друзья или не друзья авторизованному юзеру
-     *
-     * @return UsersModel[]
-     */
-    public function getOtherUsers(): array
+    public function getUsers()
     {
         $authUserid = $_SESSION['auth_user']['id'];
 
-        $sth = $this->db->prepare("SELECT *, null as user_id FROM `users`
-                                                WHERE `id` != :id 
-                                        UNION DISTINCT 
-                                            SELECT users.*, friends.user_id as user_id FROM `users` 
-                                                JOIN `friends` ON users.id = friends.friend_id 
-                                                WHERE users.id != :id AND friends.user_id = :id");
+        $sth = $this->db->prepare("SELECT * FROM `users`
+                                                WHERE `id` != :authUserid");
 
         $sth->execute([
-            'id' => $authUserid
+            'authUserid' => $authUserid
         ]);
 
         if (!$sth->rowCount()) {
@@ -131,36 +121,55 @@ class UsersRepository extends Main
 
         $users = [];
         while ($field = $sth->fetch(\PDO::FETCH_ASSOC)) {
-            $friendsModel = new FriendsModel();
-            $friendsModel->setUserId($field['user_id'] ?? 0);
-            $field['friends'] = $friendsModel;
             $users[$field['id']] = UsersModel::setMap($field);
         }
 
         return $users;
     }
 
-    public function getFriends(?array $userSearchId): array
+    public function getFriendsAuthUser(?array $userFriendsIds)
     {
         $authUserid = $_SESSION['auth_user']['id'];
 
-        $sql = "SELECT users.*, friends.user_id as user_id FROM `users` 
-                                                JOIN `friends` ON users.id = friends.friend_id 
-                                                WHERE users.id != :authUserid ";
-
+        $sql = "SELECT * FROM `friends` WHERE user_id = :authUserid ";
         $sqlParams = [
             'authUserid' => $authUserid
         ];
 
-        if ($userSearchId) {
-            $sql .= "AND users.id IN (:userSearchId) ";
-            $sqlParams['userSearchId'] = implode(',', $userSearchId);
+        if ($userFriendsIds) {
+            $sql .= sprintf("AND friend_id IN (%s)", implode(',', $userFriendsIds));
         }
-
-        $sql .= "AND friends.user_id = :authUserid";
 
         $sth = $this->db->prepare($sql);
         $sth->execute($sqlParams);
+
+        if (!$sth->rowCount()) {
+            throw new Exception('Не найдено ни одного друга');
+        }
+
+        $friendsIds = [];
+        while ($field = $sth->fetch(\PDO::FETCH_ASSOC)) {
+            $friendsIds[] = $field['friend_id'];
+        }
+
+        return array_unique($friendsIds);
+    }
+
+    /**
+     * @return UsersModel[]
+     */
+    public function getFriends(): array
+    {
+        $authUserid = $_SESSION['auth_user']['id'];
+
+        $sql = "SELECT users.*, friends.user_id as user_id FROM `users`
+                                                JOIN `friends` ON users.id = friends.friend_id
+                                                WHERE users.id != :authUserid AND friends.user_id = :authUserid";
+
+        $sth = $this->db->prepare($sql);
+        $sth->execute([
+            'authUserid' => $authUserid
+        ]);
 
         if (!$sth->rowCount()) {
             throw new Exception('Не найдено ни одного пользователя');

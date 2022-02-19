@@ -41,18 +41,14 @@ class UsersService
      */
     public function getOtherUsers(? array $searchUsers): array
     {
-        if ($searchUsers) {
-            $authUserFriends = (new UsersRepository())->getFriends(array_keys($searchUsers));
-            foreach ($authUserFriends as $userId => $fields) {
-                if ($searchUsers[$userId]) {
-                    $searchUsers[$userId] = $fields;
-                }
-            }
+        $userRepository = new UsersRepository();
 
-            return (new UsersRepository())->getFriends(array_keys($searchUsers));
+        if ($searchUsers) {
+            return $this->findFriend($searchUsers);
         }
 
-        return (new UsersRepository())->getOtherUsers();
+        $users = $userRepository->getUsers();
+        return $this->findFriend($users);
     }
 
     public function getFriends(): array
@@ -63,5 +59,24 @@ class UsersService
     public function searchFriends(string $name, string $surName): array
     {
         return (new UsersRepository())->searchFriends($name, $surName);
+    }
+
+    /**
+     * @param UsersModel[] $searchUsers
+     */
+    protected function findFriend(array $searchUsers): array
+    {
+        $userRepository = new UsersRepository();
+        $authUserFriendIds = $userRepository->getFriendsAuthUser(array_keys($searchUsers));
+
+        foreach ($authUserFriendIds as $userId) {
+            if ($searchUsers[$userId]) {
+                $friendsModel = new FriendsModel();
+                $friendsModel->setFriendId($_SESSION['auth_user']['id']);
+                $searchUsers[$userId]->setFriends($friendsModel);
+            }
+        }
+
+        return $searchUsers;
     }
 }

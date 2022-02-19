@@ -14,9 +14,11 @@ $usersController = new UsersController();
 $searchUsers = null;
 $name = $_POST['search-name'] ?? '';
 $surName = $_POST['search-surname'] ?? '';
-if (!$_POST['search-name'] || !$_POST['search-surname']) {
+
+if (!empty($_POST['search-name']) || !empty($_POST['search-surname'])) {
     $searchUsers = $usersController->searchFriends($name, $surName);
 }
+
 
 $usersController = new UsersController();
 $users = $usersController->getOtherUsers($searchUsers);
@@ -41,7 +43,7 @@ $users = $usersController->getOtherUsers($searchUsers);
     <?php foreach ($users as $user) { ?>
     <a href="?change_friend=<?= $user->getId() ?>" class="list-group-item list-group-item-action btn d-flex justify-content-between">
         <?=$user->getSurName() . ' ' . $user->getFirstName() ?>
-        <span class="badge badge-primary badge-pill"><?= !empty($user->getFriends()->getUserId()) ? 'в друзьях' : 'не в друзьях' ?></span>
+        <span class="badge badge-primary badge-pill"><?= !empty($user->getFriends()) ? 'в друзьях' : 'не в друзьях' ?></span>
     </a>
     <?php } ?>
 </div>
