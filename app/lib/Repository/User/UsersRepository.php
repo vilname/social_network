@@ -142,22 +142,19 @@ class UsersRepository extends Main
 
     public function getFriends(?array $userSearchId): array
     {
-        $authUserid = $_SESSION['auth_user']['id'];
+//        $authUserid = $_SESSION['auth_user']['id'];
 
         $sql = "SELECT users.*, friends.user_id as user_id FROM `users` 
-                                                JOIN `friends` ON users.id = friends.friend_id 
-                                                WHERE users.id != :authUserid ";
+                                                JOIN `friends` ON users.id = friends.friend_id";
 
         $sqlParams = [
-            'authUserid' => $authUserid
+//            'authUserid' => $authUserid
         ];
 
         if ($userSearchId) {
-            $sql .= "AND users.id IN (:userSearchId) ";
+            $sql .= " WHERE users.id IN (:userSearchId) ";
             $sqlParams['userSearchId'] = implode(',', $userSearchId);
         }
-
-        $sql .= "AND friends.user_id = :authUserid";
 
         $sth = $this->db->prepare($sql);
         $sth->execute($sqlParams);
@@ -179,17 +176,18 @@ class UsersRepository extends Main
 
     public function searchFriends(string $firstName, string $surName): array
     {
-        $authUserid = $_SESSION['auth_user']['id'];
+//        $authUserid = $_SESSION['auth_user']['id'];
 
-        $sth = $this->db->prepare("SELECT * FROM `users` 
-                                                WHERE id != :authUserid AND
-                                                      first_name LIKE :firstName AND sur_name LIKE :surName");
+        $sql = sprintf("SELECT * FROM `users` WHERE first_name LIKE '%s' AND sur_name LIKE '%s'", $firstName, $surName);
+        $sth = $this->db->prepare($sql);
 
-        $sth->execute([
-            'authUserid' => $authUserid,
-            'firstName' => $firstName.'%',
-            'surName' => $surName.'%'
-        ]);
+        $sth->execute();
+
+//        $sth->execute([
+//            'authUserid' => $authUserid,
+////            'firstName' => $firstName.'%',
+////            'surName' => $surName.'%'
+//        ]);
 
         if (!$sth->rowCount()) {
             throw new Exception('Не найдено ни одного пользователя');
