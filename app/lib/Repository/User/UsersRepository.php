@@ -129,11 +129,13 @@ class UsersRepository extends Main
 
     public function getFriendsAuthUser(?array $userFriendsIds)
     {
-        $authUserid = $_SESSION['auth_user']['id'];
+//        $authUserid = $_SESSION['auth_user']['id'];
 
-        $sql = "SELECT * FROM `friends` WHERE user_id = :authUserid ";
+        $sql = "SELECT users.*, friends.user_id as user_id FROM `users` 
+                                                JOIN `friends` ON users.id = friends.friend_id";
+
         $sqlParams = [
-            'authUserid' => $authUserid
+//            'authUserid' => $authUserid
         ];
 
         if ($userFriendsIds) {
@@ -188,17 +190,18 @@ class UsersRepository extends Main
 
     public function searchFriends(string $firstName, string $surName): array
     {
-        $authUserid = $_SESSION['auth_user']['id'];
+//        $authUserid = $_SESSION['auth_user']['id'];
 
-        $sth = $this->db->prepare("SELECT * FROM `users` 
-                                                WHERE id != :authUserid AND
-                                                      first_name LIKE :firstName AND sur_name LIKE :surName");
+        $sql = sprintf("SELECT * FROM `users` WHERE first_name LIKE '%s' AND sur_name LIKE '%s'", $firstName, $surName);
+        $sth = $this->db->prepare($sql);
 
-        $sth->execute([
-            'authUserid' => $authUserid,
-            'firstName' => $firstName.'%',
-            'surName' => $surName.'%'
-        ]);
+        $sth->execute();
+
+//        $sth->execute([
+//            'authUserid' => $authUserid,
+////            'firstName' => $firstName.'%',
+////            'surName' => $surName.'%'
+//        ]);
 
         if (!$sth->rowCount()) {
             throw new Exception('Не найдено ни одного пользователя');

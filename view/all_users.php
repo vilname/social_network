@@ -12,13 +12,11 @@ if ($getParams['change_friend']) {
 
 $usersController = new UsersController();
 $searchUsers = null;
-$name = $_POST['search-name'] ?? '';
-$surName = $_POST['search-surname'] ?? '';
-
-if (!empty($_POST['search-name']) || !empty($_POST['search-surname'])) {
+$name = $_POST['search-name'] . '%' ?? '';
+$surName = $_POST['search-surname'] . '%' ?? '';
+if ($_POST['search-name'] || $_POST['search-surname']) {
     $searchUsers = $usersController->searchFriends($name, $surName);
 }
-
 
 $usersController = new UsersController();
 $users = $usersController->getOtherUsers($searchUsers);
