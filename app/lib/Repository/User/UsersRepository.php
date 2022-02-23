@@ -11,7 +11,7 @@ class UsersRepository extends Main
 {
     public function getUserByLogin(string $login): ?UsersModel
     {
-        $sth = $this->db->prepare("SELECT * FROM `users` WHERE `login` = :login");
+        $sth = $this->db->prepare("SELECT * FROM `users` WHERE login = :login");
 
         $sth->execute([
             'login' => $login
@@ -106,10 +106,9 @@ class UsersRepository extends Main
 
     public function getUsers()
     {
-        $authUserid = $_SESSION['auth_user']['id'];
+        $authUserid = $this->getFirstUser();
 
-        $sth = $this->db->prepare("SELECT * FROM `users`
-                                                WHERE `id` != :authUserid");
+        $sth = $this->db->prepare("SELECT * FROM `users` WHERE id != :authUserid LIMIT 100");
 
         $sth->execute([
             'authUserid' => $authUserid
@@ -127,20 +126,39 @@ class UsersRepository extends Main
         return $users;
     }
 
+    public function getFirstUser()
+    {
+        if ($_SESSION['auth_user']['id']) {
+            return $_SESSION['auth_user']['id'];
+        }
+
+        $sth = $this->db->prepare("SELECT id FROM `users` ORDER id ASC LIMIT 1");
+        $sth->execute();
+
+        if (!$sth->rowCount()) {
+            throw new Exception('Не найдено ни одного пользователя');
+        }
+
+        return $sth->fetch(\PDO::FETCH_ASSOC);
+    }
+
     public function getFriendsAuthUser(?array $userFriendsIds)
     {
-//        $authUserid = $_SESSION['auth_user']['id'];
+        $authUserid = $this->getFirstUser();
 
         $sql = "SELECT users.*, friends.user_id as user_id FROM `users` 
-                                                JOIN `friends` ON users.id = friends.friend_id";
+                                                JOIN `friends` ON users.id = friends.friend_id
+                                                WHERE users.id != :authUserid ";
 
         $sqlParams = [
-//            'authUserid' => $authUserid
+            'authUserid' => $authUserid
         ];
 
         if ($userFriendsIds) {
             $sql .= sprintf("AND friend_id IN (%s)", implode(',', $userFriendsIds));
         }
+
+        $sql .= 'LIMIT 100';
 
         $sth = $this->db->prepare($sql);
         $sth->execute($sqlParams);
@@ -162,7 +180,7 @@ class UsersRepository extends Main
      */
     public function getFriends(): array
     {
-        $authUserid = $_SESSION['auth_user']['id'];
+        $authUserid = $this->getFirstUser();
 
         $sql = "SELECT users.*, friends.user_id as user_id FROM `users`
                                                 JOIN `friends` ON users.id = friends.friend_id
@@ -190,18 +208,15 @@ class UsersRepository extends Main
 
     public function searchFriends(string $firstName, string $surName): array
     {
-//        $authUserid = $_SESSION['auth_user']['id'];
+        $authUserid = $this->getFirstUser();
 
-        $sql = sprintf("SELECT * FROM `users` WHERE first_name LIKE '%s' AND sur_name LIKE '%s'", $firstName, $surName);
+        $sql = sprintf("SELECT * FROM `users` WHERE id != :authUserid 
+                                                        AND first_name LIKE '%s' 
+                                                        AND sur_name LIKE '%s'", $firstName.'%', $surName.'%');
         $sth = $this->db->prepare($sql);
-
-        $sth->execute();
-
-//        $sth->execute([
-//            'authUserid' => $authUserid,
-////            'firstName' => $firstName.'%',
-////            'surName' => $surName.'%'
-//        ]);
+        $sth->execute([
+            'authUserid' => $authUserid,
+        ]);
 
         if (!$sth->rowCount()) {
             throw new Exception('Не найдено ни одного пользователя');

@@ -10,10 +10,14 @@ if ($getParams['change_friend']) {
     $friendController->changeStatusFriend($getParams['change_friend'], $_SESSION['auth_user']['id']);
 }
 
+//echo '<pre>';
+//print_r($_POST);
+//echo '</pre>';
+
 $usersController = new UsersController();
 $searchUsers = null;
-$name = $_POST['search-name'] . '%' ?? '';
-$surName = $_POST['search-surname'] . '%' ?? '';
+$name = $_POST['search-name'] ?? '';
+$surName = $_POST['search-surname'] ?? '';
 if ($_POST['search-name'] || $_POST['search-surname']) {
     $searchUsers = $usersController->searchFriends($name, $surName);
 }
@@ -31,7 +35,7 @@ $users = $usersController->getOtherUsers($searchUsers);
     </div>
     <div class="form-group">
         <label for="search-surname">Фамилия</label>
-        <input type="text" class="form-control" id="search-surname" placeholder="Фамилия" value="<?= $surName ?>">
+        <input type="text" class="form-control" id="search-surname" name="search-surname" placeholder="Фамилия" value="<?= $surName ?>">
     </div>
 
     <button type="submit" class="btn btn-primary mb-2">Поиск</button>

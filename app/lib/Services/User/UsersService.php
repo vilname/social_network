@@ -3,16 +3,22 @@
 namespace app\lib\Services\User;
 
 use app\lib\Repository\Friends\Model\FriendsModel;
-use app\lib\Repository\Main;
 use app\lib\Repository\User\Model\UsersModel;
 use app\lib\Repository\User\UsersRepository;
 
 class UsersService
 {
+    protected $usersRepository;
+
+    public function __construct()
+    {
+        $this->usersRepository = new UsersRepository();
+    }
+
     public function getUserByLogin(string $login): ?UsersModel
     {
         try {
-            $user = (new UsersRepository())->getUserByLogin($login);
+            $user = $this->usersRepository->getUserByLogin($login);
         } catch (\Exception $e) {
             $user = null;
         }
@@ -22,17 +28,17 @@ class UsersService
 
     public function saveUser(UsersModel $user): int
     {
-        return (new UsersRepository())->saveUser($user);
+        return $this->usersRepository->saveUser($user);
     }
 
     public function editUser(UsersModel $user): int
     {
-        return (new UsersRepository())->editUser($user);
+        return $this->usersRepository->editUser($user);
     }
 
     public function authUser(UsersModel $user): array
     {
-        return (new UsersRepository())->authUser($user);
+        return $this->usersRepository->authUser($user);
     }
 
     /**
@@ -41,24 +47,22 @@ class UsersService
      */
     public function getOtherUsers(? array $searchUsers): array
     {
-        $userRepository = new UsersRepository();
-
         if ($searchUsers) {
             return $this->findFriend($searchUsers);
         }
 
-        $users = $userRepository->getUsers();
+        $users = $this->usersRepository->getUsers();
         return $this->findFriend($users);
     }
 
     public function getFriends(): array
     {
-        return (new UsersRepository())->getFriends();
+        return $this->usersRepository->getFriends();
     }
 
     public function searchFriends(string $name, string $surName): array
     {
-        return (new UsersRepository())->searchFriends($name, $surName);
+        return $this->usersRepository->searchFriends($name, $surName);
     }
 
     /**
@@ -66,8 +70,7 @@ class UsersService
      */
     protected function findFriend(array $searchUsers): array
     {
-        $userRepository = new UsersRepository();
-        $authUserFriendIds = $userRepository->getFriendsAuthUser(array_keys($searchUsers));
+        $authUserFriendIds = $this->usersRepository->getFriendsAuthUser(array_keys($searchUsers));
 
         foreach ($authUserFriendIds as $userId) {
             if ($searchUsers[$userId]) {

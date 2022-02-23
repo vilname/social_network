@@ -5,7 +5,6 @@ use app\lib\Controllers\UsersController;
 
 $usersController = new UsersController();
 $user = $usersController->getUser($_SESSION['auth_user']['login']);
-
 ?>
 
 <a href="/view/edit.php" class="btn btn-info m-3">Редактировать</a>
