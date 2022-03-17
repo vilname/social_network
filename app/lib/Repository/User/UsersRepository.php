@@ -132,7 +132,7 @@ class UsersRepository extends Main
             return $_SESSION['auth_user']['id'];
         }
 
-        $sth = $this->db->prepare("SELECT id FROM `users` ORDER id ASC LIMIT 1");
+        $sth = $this->db->prepare("SELECT id FROM `users` ORDER BY id ASC LIMIT 1");
         $sth->execute();
 
         if (!$sth->rowCount()) {
@@ -212,7 +212,8 @@ class UsersRepository extends Main
 
         $sql = sprintf("SELECT * FROM `users` WHERE id != :authUserid 
                                                         AND first_name LIKE '%s' 
-                                                        AND sur_name LIKE '%s'", $firstName.'%', $surName.'%');
+                                                        AND sur_name LIKE '%s'
+                                                        ORDER BY id ASC ", $firstName.'%', $surName.'%');
         $sth = $this->db->prepare($sql);
         $sth->execute([
             'authUserid' => $authUserid,

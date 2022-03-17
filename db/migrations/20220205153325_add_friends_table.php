@@ -18,7 +18,7 @@ final class AddFriendsTable extends AbstractMigration
      */
     public function change(): void
     {
-        $table = $this->table('friends', ['id' => false]);
+        $table = $this->table('friends');
         $table->addColumn('user_id', 'string', ['limit' => 255])
             ->addColumn('friend_id', 'string', ['limit' => 255])
             ->create();
